@@ -6,14 +6,20 @@
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.x-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
 ![Plotly](https://img.shields.io/badge/Plotly-Interactive-3F4F75?style=for-the-badge&logo=plotly&logoColor=white)
 ![Domain](https://img.shields.io/badge/Domain-Telecom%20%2F%20ISP-0ea5e9?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Live-10b981?style=for-the-badge)
+![Status](https://img.shields.io/badge/Rodar-local%20em%202%20comandos-10b981?style=for-the-badge)
 
 **Projeto 2 de 3 da série FiberNet Analytics.**  
 Dashboard operacional em tempo real com KPIs críticos de ISP — do churn ao SLA — construído para decisão de negócio, não para relatório.
 
-[🔗 Ver Demo Live](https://hugoleonardonz-telecom-kpi-dashboard.streamlit.app) · [Ver Série](#-série-fibernet-analytics)
+[Como rodar](#como-rodar) · [Ver Série](#-série-fibernet-analytics)
 
 </div>
+
+---
+
+![Visão geral do dashboard](docs/img/overview.png)
+
+*Aba Overview: KPIs com variação mês a mês e evolução de base, churn e novos clientes num só gráfico.*
 
 ---
 
@@ -125,7 +131,7 @@ streamlit run app.py
 
 Acesse em `http://localhost:8501`
 
-**Sem instalação:** [ver demo no Streamlit Cloud](https://hugoleonardonz-telecom-kpi-dashboard.streamlit.app)
+
 
 ---
 
