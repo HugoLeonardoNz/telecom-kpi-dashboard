@@ -13,8 +13,13 @@ def build_monthly() -> pd.DataFrame:
     rng = np.random.default_rng(42)
     months = pd.date_range("2024-01-01", "2025-01-01", freq="MS")
 
-    churn_seasonal = np.array([3.2, 3.5, 3.1, 2.9, 2.7, 2.5, 2.4, 2.6, 2.8, 3.0, 3.4, 3.8, 2.1])
-    churn_rates    = np.clip(churn_seasonal + rng.normal(0, 0.06, 13), 2.1, 3.8)
+    # Sazonalidade de churn: pico no verão (rescisão de contrato de temporada e
+    # mudança de endereço no início do ano), vale no meio do ano. O 13º ponto é
+    # jan/2025 e repete o patamar de jan/2024 — antes era 2.1, um degrau de -45%
+    # contra dezembro que não vinha de lógica nenhuma e virava a única variação
+    # visível do painel: o cartão de churn abria com "▼ 44,7% vs. mês anterior".
+    churn_seasonal = np.array([3.2, 3.5, 3.1, 2.9, 2.7, 2.5, 2.4, 2.6, 2.8, 3.0, 3.4, 3.8, 3.3])
+    churn_rates    = np.clip(churn_seasonal + rng.normal(0, 0.06, 13), 2.0, 4.0)
     arpu_base      = np.clip(np.linspace(92.0, 107.0, 13) + rng.normal(0, 1.2, 13), 89, 134)
 
     prom_fracs = np.clip(rng.uniform(0.44, 0.62, 13), 0.30, 0.70)
@@ -24,9 +29,15 @@ def build_monthly() -> pd.DataFrame:
 
     rows, clients = [], 82_500
     for i, m in enumerate(months):
-        new_c   = int(clients * rng.uniform(0.018, 0.025))
+        # A aquisição precisa cobrir o churn para a base andar. Com churn de
+        # 2,4% a 3,8% ao mês e captação de 1,8% a 2,5%, a base só caía — e o
+        # `max(..., 75_000)` que existia aqui prendia o resultado no piso.
+        # O efeito era o pior possível num painel: o KPI de abertura mostrava
+        # 75.000 clientes e "+0,0% vs. mês anterior" o ano inteiro, porque o
+        # número não era um resultado, era o próprio limite da conta.
+        new_c   = int(clients * rng.uniform(0.030, 0.042))
         churned = int(clients * churn_rates[i] / 100)
-        clients = max(clients - churned + new_c, 75_000)
+        clients = clients - churned + new_c
         rows.append({
             "month":          m,
             "month_label":    m.strftime("%b/%y"),

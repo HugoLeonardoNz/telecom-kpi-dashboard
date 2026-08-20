@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
+/* Escala de arredondamento — espelha RADIUS em src/constants.py.
+   Um degrau por nivel de superficie: chip < controle < painel. Nenhum
+   border-radius fora destas tres variaveis. */
+:root {
+    --r-chip:  10px;   /* marcador, tag, pilula */
+    --r-ctrl:  14px;   /* campo, botao, aba, item de menu */
+    --r-panel: 20px;   /* cartao e painel */
+}
+
 html, body, [class*="css"], .stApp { background-color: #0a0d14 !important; font-family: 'Inter','Segoe UI',sans-serif !important; }
 .main .block-container { padding-top: 1.5rem !important; max-width: 1200px !important; }
 #MainMenu { visibility: hidden; }
@@ -22,19 +31,19 @@ section[data-testid="stSidebar"] .stMarkdown p {
 .stDateInput > div > div {
     background-color:#1a1f2e !important;
     border:1px solid rgba(79,142,247,0.3) !important;
-    border-radius:8px !important;
+    border-radius:var(--r-ctrl) !important;
     color:#e2e8f0 !important;
 }
 
 .stMultiSelect > div > div {
     background-color:#1a1f2e !important;
     border:1px solid rgba(79,142,247,0.3) !important;
-    border-radius:8px !important;
+    border-radius:var(--r-ctrl) !important;
 }
 .stMultiSelect span[data-baseweb="tag"] {
     background-color:rgba(79,142,247,0.2) !important;
     border:1px solid rgba(79,142,247,0.4) !important;
-    border-radius:6px !important;
+    border-radius:var(--r-chip) !important;
     color:#4f8ef7 !important;
     font-size:0.75rem !important;
 }
@@ -42,7 +51,7 @@ section[data-testid="stSidebar"] .stMarkdown p {
 div[data-testid="metric-container"] {
     background:linear-gradient(135deg,#1a1f2e 0%,#1e2438 100%);
     border:1px solid rgba(79,142,247,0.15);
-    border-radius:12px; padding:1rem 1.25rem;
+    border-radius:var(--r-panel); padding:1rem 1.25rem;
     box-shadow:0 4px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);
     position:relative; overflow:hidden;
 }
@@ -62,12 +71,12 @@ div[data-testid="metric-container"] [data-testid="stMetricDelta"] {
 }
 
 .stTabs [data-baseweb="tab-list"] {
-    background:#0f1320 !important; border-radius:10px !important;
+    background:#0f1320 !important; border-radius:var(--r-panel) !important;
     padding:4px !important; gap:2px !important;
     border:1px solid rgba(255,255,255,0.06) !important;
 }
 .stTabs [data-baseweb="tab"] {
-    background:rgba(0,0,0,0) !important; border-radius:7px !important;
+    background:rgba(0,0,0,0) !important; border-radius:var(--r-ctrl) !important;
     color:#64748b !important; font-weight:500 !important;
     font-size:0.85rem !important; padding:0.5rem 1rem !important;
     transition:all 0.2s ease !important;
@@ -79,7 +88,7 @@ div[data-testid="metric-container"] [data-testid="stMetricDelta"] {
 
 .stDownloadButton button, .stButton button {
     background:linear-gradient(135deg,rgba(79,142,247,0.15),rgba(124,58,237,0.15)) !important;
-    border:1px solid rgba(79,142,247,0.4) !important; border-radius:8px !important;
+    border:1px solid rgba(79,142,247,0.4) !important; border-radius:var(--r-ctrl) !important;
     color:#93bbfd !important; font-weight:500 !important; transition:all 0.2s ease !important;
 }
 .stDownloadButton button:hover, .stButton button:hover {
@@ -89,20 +98,18 @@ div[data-testid="metric-container"] [data-testid="stMetricDelta"] {
     transform:translateY(-1px) !important;
 }
 
-.stDataFrame { border:1px solid rgba(79,142,247,0.15) !important; border-radius:10px !important; overflow:hidden !important; }
+.stDataFrame { border:1px solid rgba(79,142,247,0.15) !important; border-radius:var(--r-panel) !important; overflow:hidden !important; }
 
 .section-label {
     font-family:'JetBrains Mono',monospace; font-size:10px; color:#4f8ef7;
     letter-spacing:0.3em; text-transform:uppercase; margin-bottom:12px; margin-top:4px;
 }
 .resumo-box {
-    background:#1a1f2e; border:1px solid rgba(79,142,247,0.15); border-radius:8px;
+    background:#1a1f2e; border:1px solid rgba(79,142,247,0.15); border-radius:var(--r-panel);
     padding:1rem 1.25rem; overflow-y:auto; max-height:420px;
     font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#e2e8f0;
     white-space:pre; line-height:1.65;
 }
 ::-webkit-scrollbar { width:5px; height:5px; }
 ::-webkit-scrollbar-track { background:#0a0d14; }
-::-webkit-scrollbar-thumb { background:rgba(79,142,247,0.28); border-radius:3px; }
-@keyframes livepulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
-.live-dot { display:inline-block; color:#10b981; animation:livepulse 2s infinite; }
+::-webkit-scrollbar-thumb { background:rgba(79,142,247,0.28); border-radius:var(--r-chip); }

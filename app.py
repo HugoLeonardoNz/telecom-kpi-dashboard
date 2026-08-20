@@ -9,7 +9,7 @@ from src.constants import (
 )
 from src.data_loader import build_monthly, build_plans, build_regions, build_cohort, build_support
 from src.charts import (
-    make_overview_chart, make_nps_chart, make_arpu_chart,
+    make_overview_chart, make_movimento_chart, make_nps_chart, make_arpu_chart,
     make_cohort_chart, make_plan_churn_chart, make_funnel_chart,
     make_mrr_chart, make_revenue_pie, make_region_mrr_chart, make_region_arpu_chart,
     make_ticket_pie, make_sla_bar_chart, make_sla_trend_chart,
@@ -44,7 +44,7 @@ def main():
         "<div style='padding:12px 0 16px'>"
         "<div style='font-family:JetBrains Mono,monospace;font-size:10px;color:#4b5468;"
         "letter-spacing:.25em;text-transform:uppercase;margin-bottom:4px'>ISP Analytics</div>"
-        "<div style='font-size:16px;font-weight:700;color:#f0f2f8'>📡 FiberNet Pro</div>"
+        "<div style='font-size:16px;font-weight:700;color:#f0f2f8'>FiberNet Pro</div>"
         "</div>", unsafe_allow_html=True,
     )
     st.sidebar.markdown("---")
@@ -70,7 +70,7 @@ def main():
     sel_plans   = st.sidebar.multiselect("Plano",  PLANS,   default=[], placeholder="Todos os planos",  key="_plans")
     st.sidebar.markdown("<br>", unsafe_allow_html=True)
 
-    if st.sidebar.button("🔄 Limpar Filtros", use_container_width=True):
+    if st.sidebar.button("Limpar Filtros", use_container_width=True):
         for k in ["_data_inicio", "_data_fim", "_regions", "_plans"]:
             st.session_state.pop(k, None)
         st.rerun()
@@ -124,7 +124,7 @@ def main():
 
     st.sidebar.markdown(f"""
     <div style='background:rgba(79,142,247,0.06);border:1px solid rgba(79,142,247,0.14);
-         border-radius:10px;padding:14px 16px;margin-top:4px'>
+         border-radius:20px;padding:14px 16px;margin-top:4px'>
       <div style='font-size:10px;color:#4b5468;letter-spacing:.1em;text-transform:uppercase;
            font-family:monospace;margin-bottom:6px'>{periodo_str}</div>
       <div style='font-size:22px;font-weight:700;font-family:monospace;color:#4f8ef7'>
@@ -143,14 +143,14 @@ def main():
     st.markdown(f"""
     <div style='margin-bottom:24px'>
       <div style='font-size:10px;color:#4b5468;letter-spacing:.3em;text-transform:uppercase;
-           font-family:monospace;margin-bottom:10px'>Real-time KPI Intelligence Platform</div>
+           font-family:monospace;margin-bottom:10px'>Painel operacional de KPIs · provedor de internet</div>
       <div style='display:flex;align-items:center;gap:14px;flex-wrap:wrap'>
         <span style='font-size:28px;font-weight:700;color:#f0f2f8;letter-spacing:-0.5px;
-              font-family:Inter,sans-serif'>📡 Telecom Analytics Dashboard</span>
+              font-family:Inter,sans-serif'>Telecom Analytics Dashboard</span>
         <span style='display:inline-flex;align-items:center;gap:5px;
-              background:rgba(16,185,129,0.10);border:1px solid rgba(16,185,129,0.25);
-              border-radius:999px;padding:4px 12px;font-size:11px;font-family:monospace;color:#10b981'>
-          <span class='live-dot'>●</span>&nbsp;LIVE
+              background:rgba(245,158,11,0.10);border:1px solid rgba(245,158,11,0.25);
+              border-radius:10px;padding:4px 12px;font-size:11px;font-family:monospace;color:#f59e0b'>
+          ●&nbsp;DADOS SINTÉTICOS
         </span>
       </div>
       <div style='margin-top:6px;font-size:13px;color:#8b92a5'>
@@ -167,29 +167,31 @@ def main():
         parts = []
         if r_filtered: parts.append(f"Regiões: **{regioes_label}**")
         if p_filtered: parts.append(f"Planos: **{planos_label}**")
-        st.info(f"🔍 Filtrando por: {' · '.join(parts)}")
+        st.info(f"Filtrando por: {' · '.join(parts)}")
 
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "📈 Overview", "🔁 Retenção & Churn", "💰 Receita", "🛠️ NOC / SLA", "📤 Exportar",
+        "Overview", "Retenção & Churn", "Receita", "NOC / SLA", "Exportar",
     ])
 
     # ══ TAB 1 — OVERVIEW ══════════════════════════════════════════════════════
     with tab1:
         c1, c2, c3, c4 = st.columns(4)
         with c1: kpi_card("Clientes Ativos", f"{int(cur['active_clients']):,}".replace(",", "."),
-                           d_clients, "vs. mês ant.", "👥", COLORS["blue"])
+                           d_clients, "vs. mês ant.", COLORS["blue"])
         with c2: kpi_card("Churn Rate", f"{cur['churn_rate']:.2f}%",
-                           d_churn, "vs. mês ant.", "📉", COLORS["red"], invert=True)
+                           d_churn, "vs. mês ant.", COLORS["red"], invert=True)
         with c3: kpi_card("ARPU", f"R$ {cur['arpu']:.2f}",
-                           d_arpu, "vs. mês ant.", "💵", COLORS["green"])
+                           d_arpu, "vs. mês ant.", COLORS["green"])
         with c4: kpi_card("NPS Score", str(int(cur["nps"])),
-                           d_nps, "vs. mês ant.", "⭐", COLORS["purple"])
+                           d_nps, "vs. mês ant.", COLORS["purple"])
 
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown('<p class="section-label">Evolução Mensal — Base & Churn</p>', unsafe_allow_html=True)
 
         if len(filt_m) > 1:
-            st.plotly_chart(make_overview_chart(filt_m), use_container_width=True)
+            col_base, col_mov = st.columns(2)
+            with col_base: st.plotly_chart(make_overview_chart(filt_m), use_container_width=True)
+            with col_mov:  st.plotly_chart(make_movimento_chart(filt_m), use_container_width=True)
             col_nps, col_arpu_ch = st.columns(2)
             with col_nps:   st.plotly_chart(make_nps_chart(filt_m), use_container_width=True)
             with col_arpu_ch: st.plotly_chart(make_arpu_chart(filt_m), use_container_width=True)
@@ -246,15 +248,15 @@ def main():
         with n1:
             acc  = COLORS["green"] if avg_sla_r >= 95 else COLORS["amber"] if avg_sla_r >= 92 else COLORS["red"]
             note = "✓ Acima da meta 95%" if avg_sla_r >= 95 else "⚠ Abaixo da meta 95%"
-            mini_kpi("📶", "SLA Médio (filtrado)", f"{avg_sla_r:.1f}%", note, acc)
+            mini_kpi("SLA Médio (filtrado)", f"{avg_sla_r:.1f}%", note, acc)
         with n2:
-            mini_kpi("⏱", "MTTR Médio", f"{avg_mttr:.0f}h", "Meta ≤ 48h",
+            mini_kpi("MTTR Médio", f"{avg_mttr:.0f}h", "Meta ≤ 48h",
                      COLORS["green"] if avg_mttr <= 36 else COLORS["amber"])
         with n3:
-            mini_kpi("🎫", "Tickets (30d)", f"{total_t:,}", "Total abertos no período", COLORS["blue"])
+            mini_kpi("Tickets (30d)", f"{total_t:,}", "Total abertos no período", COLORS["blue"])
         with n4:
             acc = COLORS["red"] if min_sla < 92 else COLORS["amber"] if min_sla < 95 else COLORS["green"]
-            mini_kpi("📍", "Pior SLA Regional", f"{min_sla:.1f}%", "Região mais crítica", acc)
+            mini_kpi("Pior SLA Regional", f"{min_sla:.1f}%", "Região mais crítica", acc)
 
         st.markdown("<br>", unsafe_allow_html=True)
         cn1, cn2 = st.columns([2, 3])
