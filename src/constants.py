@@ -5,6 +5,20 @@ DATE_MAX = date(2025, 1, 1)
 
 PALETTE = ["#4f8ef7", "#7c3aed", "#10b981", "#f59e0b", "#ef4444"]
 
+# Escala de arredondamento — um degrau por nivel de superficie, e nada fora dela.
+# E a mesma escala usada nos relatorios Power BI do portfolio: paleta e tipografia
+# separam as pecas, o acabamento as une. Antes, esta folha tinha seis raios
+# diferentes (12, 10, 8, 7, 6, 3) escolhidos um a um, e o conjunto lia como
+# telas de produtos distintos coladas.
+#
+#   chip   marcador, tag, pilula
+#   ctrl   controle: campo, botao, aba, item de menu
+#   panel  cartao e painel, a maior superficie da tela
+#
+# O raio acompanha o tamanho da superficie: raio unico em elementos de tamanhos
+# diferentes faz o pequeno parecer redondo demais e o grande, duro.
+RADIUS = {"chip": 10, "ctrl": 14, "panel": 20}
+
 COLORS = {
     "blue":   "#4f8ef7",
     "purple": "#7c3aed",

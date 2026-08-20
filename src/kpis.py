@@ -1,6 +1,6 @@
 import streamlit as st
 
-from .constants import COLORS
+from .constants import COLORS, RADIUS
 
 
 def dpct(a: float, b: float) -> float:
@@ -8,7 +8,15 @@ def dpct(a: float, b: float) -> float:
 
 
 def kpi_card(title: str, value: str, delta_pct: float, delta_label: str,
-             icon: str = "📊", color: str = "#4f8ef7", invert: bool = False) -> None:
+             color: str = "#4f8ef7", invert: bool = False) -> None:
+    """Cartao de KPI: rotulo, numero grande e variacao.
+
+    `invert=True` para metrica em que cair e bom (churn): a seta continua
+    apontando para onde o numero foi, mas a cor diz se isso e bom.
+
+    Sem icone: o rotulo ja diz o que e, e um emoji por cartao acrescenta cinco
+    cores fora da paleta na faixa mais importante da tela.
+    """
     is_pos  = delta_pct >= 0
     good    = is_pos if not invert else not is_pos
     d_color = "#10b981" if good else "#ef4444"
@@ -16,13 +24,13 @@ def kpi_card(title: str, value: str, delta_pct: float, delta_label: str,
     sign    = "+" if is_pos else ""
     st.markdown(f"""
     <div style="background:linear-gradient(135deg,#1a1f2e 0%,#1e2438 100%);
-                border:1px solid rgba(79,142,247,0.15);border-radius:12px;
+                border:1px solid rgba(79,142,247,0.15);border-radius:{RADIUS["panel"]}px;
                 padding:1.25rem;position:relative;overflow:hidden;min-height:110px;">
       <div style="position:absolute;top:0;left:0;right:0;height:2px;
                   background:linear-gradient(90deg,{color},{color}55);"></div>
       <div style="color:#64748b;font-size:.68rem;text-transform:uppercase;
                   letter-spacing:.1em;margin-bottom:.5rem;
-                  font-family:'JetBrains Mono',monospace;">{icon} {title}</div>
+                  font-family:'JetBrains Mono',monospace;">{title}</div>
       <div style="color:#f1f5f9;font-size:1.85rem;font-weight:700;line-height:1;
                   font-family:'JetBrains Mono',monospace;">{value}</div>
       <div style="color:{d_color};font-size:.78rem;margin-top:.45rem;font-weight:500;">
@@ -31,13 +39,13 @@ def kpi_card(title: str, value: str, delta_pct: float, delta_label: str,
     </div>""", unsafe_allow_html=True)
 
 
-def mini_kpi(icon: str, title: str, value: str, note: str, accent: str = "#4f8ef7") -> None:
+def mini_kpi(title: str, value: str, note: str, accent: str = "#4f8ef7") -> None:
     st.markdown(f"""
     <div style="background:linear-gradient(135deg,#1a1f2e,#1e2438);border:1px solid rgba(79,142,247,0.15);
-                border-radius:12px;padding:1.25rem;position:relative;overflow:hidden;min-height:110px;">
+                border-radius:{RADIUS["panel"]}px;padding:1.25rem;position:relative;overflow:hidden;min-height:110px;">
       <div style="position:absolute;top:0;left:0;right:0;height:2px;background:{accent};"></div>
       <div style="color:#64748b;font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;
-                  margin-bottom:.5rem;font-family:'JetBrains Mono',monospace;">{icon} {title}</div>
+                  margin-bottom:.5rem;font-family:'JetBrains Mono',monospace;">{title}</div>
       <div style="color:#f1f5f9;font-size:1.85rem;font-weight:700;font-family:'JetBrains Mono',monospace;">{value}</div>
       <div style="color:{accent};font-size:.78rem;margin-top:.45rem;">{note}</div>
     </div>""", unsafe_allow_html=True)

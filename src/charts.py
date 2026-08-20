@@ -22,6 +22,17 @@ def apply_dark_theme(fig: go.Figure, title: str = "", height: int = 320) -> go.F
 
 
 def make_overview_chart(filt_m: pd.DataFrame) -> go.Figure:
+    """Base ativa e churn. Duas séries, dois eixos, os dois rotulados.
+
+    Antes havia uma terceira série aqui — "Novos Clientes", em barras, num
+    `yaxis3` com `showticklabels=False`. Novos clientes é da ordem de 3 mil por
+    mês e a base é da ordem de 88 mil; num eixo próprio e invisível, as barras
+    subiam até o topo do gráfico e ficavam da altura da linha da base. Quem
+    lesse comparando as duas alturas concluiria que a operadora troca a base
+    inteira todo mês. Eixo sem rótulo é o jeito mais barato de mentir num
+    gráfico, e não custa nada evitar: a série ganhou o gráfico ao lado, onde ela
+    tem escala própria e legítima (ver make_movimento_chart).
+    """
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=filt_m["month"], y=filt_m["active_clients"],
@@ -35,19 +46,41 @@ def make_overview_chart(filt_m: pd.DataFrame) -> go.Figure:
         line=dict(color=COLORS["red"], width=1.8, dash="dot"),
         marker=dict(size=5), yaxis="y2",
     ))
-    fig.add_trace(go.Bar(
-        x=filt_m["month"], y=filt_m["new_clients"],
-        name="Novos Clientes", marker_color="rgba(16,185,129,0.40)", yaxis="y3",
-    ))
     fig.update_layout(
+        yaxis=dict(title=dict(text="Clientes ativos",
+                              font=dict(color=COLORS["blue"]))),
         yaxis2=dict(overlaying="y", side="right",
                     title=dict(text="Churn %", font=dict(color=COLORS["red"])),
-                    gridcolor="rgba(0,0,0,0)", tickfont=dict(color=COLORS["red"])),
-        yaxis3=dict(overlaying="y", side="right", anchor="free", position=0.98,
-                    gridcolor="rgba(0,0,0,0)", tickfont=dict(color=COLORS["muted"]),
-                    showticklabels=False),
+                    gridcolor="rgba(0,0,0,0)", tickfont=dict(color=COLORS["red"]),
+                    ticksuffix="%"),
     )
-    return apply_dark_theme(fig, "Clientes Ativos · Churn Rate · Novos Clientes", height=380)
+    return apply_dark_theme(fig, "Base ativa e churn", height=380)
+
+
+def make_movimento_chart(filt_m: pd.DataFrame) -> go.Figure:
+    """Entradas × saídas no mesmo eixo — é a conta que explica a linha ao lado.
+
+    As duas séries têm a mesma unidade (clientes/mês) e a mesma ordem de
+    grandeza, então dividem eixo sem distorcer nada. A leitura é a distância
+    entre as barras: onde a vermelha passa a verde, a base encolheu naquele mês.
+    """
+    saldo = filt_m["new_clients"] - filt_m["churned"]
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=filt_m["month"], y=filt_m["new_clients"],
+        name="Entradas", marker_color="rgba(16,185,129,0.75)",
+    ))
+    fig.add_trace(go.Bar(
+        x=filt_m["month"], y=-filt_m["churned"],
+        name="Cancelamentos", marker_color="rgba(239,68,68,0.75)",
+    ))
+    fig.add_trace(go.Scatter(
+        x=filt_m["month"], y=saldo, name="Saldo", mode="lines+markers",
+        line=dict(color=COLORS["muted"], width=2), marker=dict(size=5),
+    ))
+    fig.update_layout(barmode="relative",
+                      yaxis=dict(title=dict(text="Clientes no mês")))
+    return apply_dark_theme(fig, "Entradas × cancelamentos", height=380)
 
 
 def make_nps_chart(filt_m: pd.DataFrame) -> go.Figure:
