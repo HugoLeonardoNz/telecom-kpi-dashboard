@@ -5,6 +5,8 @@ import plotly.graph_objects as go
 from .constants import COLORS, PALETTE
 
 
+from .format import num, pct, brl, brl_mi
+
 def apply_dark_theme(fig: go.Figure, title: str = "", height: int = 320) -> go.Figure:
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
@@ -129,7 +131,7 @@ def make_cohort_chart(cohort_df: pd.DataFrame) -> go.Figure:
             [0.0, "#1e1b4b"], [0.4, "rgba(79,142,247,0.6)"],
             [0.7, "#22d3ee"], [1.0, "#10b981"],
         ],
-        text=[[f"{v:.0f}%" if not np.isnan(v) else "—" for v in row] for row in pivot.values],
+        text=[[pct(v, 0) if not np.isnan(v) else "—" for v in row] for row in pivot.values],
         texttemplate="%{text}",
         textfont=dict(color="#f0f2f8", size=11),
         showscale=True,
@@ -149,7 +151,7 @@ def make_plan_churn_chart(plan_df_f: pd.DataFrame) -> go.Figure:
         marker=dict(color=pch["churn_rate"],
                     colorscale=[[0, "#10b981"], [0.5, "#f59e0b"], [1, "#ef4444"]],
                     cmin=0.8, cmax=4.5),
-        text=[f"{v:.2f}%" for v in pch["churn_rate"]],
+        text=[pct(v, 2) for v in pch["churn_rate"]],
         textposition="outside", textfont=dict(color=COLORS["muted"], size=11),
     ))
     return apply_dark_theme(fig, "", height=270)
@@ -204,7 +206,7 @@ def make_region_mrr_chart(region_df_f: pd.DataFrame) -> go.Figure:
     fig = go.Figure(go.Bar(
         x=rg["mrr"] / 1e6, y=rg["region"], orientation="h",
         marker=dict(color=PALETTE[:len(rg)]),
-        text=[f"R$ {v/1e6:.2f}M" for v in rg["mrr"]],
+        text=[brl_mi(v) for v in rg["mrr"]],
         textposition="outside", textfont=dict(color=COLORS["muted"], size=11),
     ))
     return apply_dark_theme(fig, "MRR por Região (R$ milhões)", height=280)
@@ -215,7 +217,7 @@ def make_region_arpu_chart(region_df_f: pd.DataFrame) -> go.Figure:
     fig = go.Figure(go.Bar(
         x=rg["arpu"], y=rg["region"], orientation="h",
         marker=dict(color=rg["arpu"], colorscale=[[0, "#7c3aed"], [1, "#4f8ef7"]]),
-        text=[f"R$ {v:.2f}" for v in rg["arpu"]],
+        text=[brl(v) for v in rg["arpu"]],
         textposition="outside", textfont=dict(color=COLORS["muted"], size=11),
     ))
     return apply_dark_theme(fig, "ARPU por Região (R$)", height=280)
@@ -238,7 +240,7 @@ def make_sla_bar_chart(region_df_f: pd.DataFrame) -> go.Figure:
     fig = go.Figure(go.Bar(
         y=rg["region"], x=rg["sla"], orientation="h",
         marker_color=c_sla,
-        text=[f"{v:.1f}%" for v in rg["sla"]],
+        text=[pct(v) for v in rg["sla"]],
         textposition="outside", textfont=dict(color=COLORS["muted"], size=11),
     ))
     fig.add_vline(x=95, line_dash="dash",
@@ -278,7 +280,7 @@ def make_mttr_chart(cat_df: pd.DataFrame) -> go.Figure:
     fig = go.Figure(go.Bar(
         x=cat_s["mttr_hours"], y=cat_s["category"], orientation="h",
         marker_color=c_mttr,
-        text=[f"{v:.0f}h" for v in cat_s["mttr_hours"]],
+        text=[num(v) + "h" for v in cat_s["mttr_hours"]],
         textposition="outside", textfont=dict(color=COLORS["muted"], size=11),
     ))
     fig.add_vline(x=48, line_dash="dash",

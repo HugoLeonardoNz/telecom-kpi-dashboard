@@ -16,6 +16,7 @@ from src.charts import (
     make_volume_trend_chart, make_mttr_chart,
 )
 from src.kpis import dpct, kpi_card, mini_kpi, compute_filter_scales
+from src.format import num, pct, brl, brl_mi
 
 st.set_page_config(
     page_title="Telecom Analytics Dashboard",
@@ -114,10 +115,13 @@ def main():
     d_arpu    = dpct(cur["arpu"],            prev["arpu"])
     d_nps     = dpct(cur["nps"],             prev["nps"])
 
-    var_periodo = dpct(int(filt_m["active_clients"].iloc[0]),
-                       int(filt_m["active_clients"].iloc[-1])) if len(filt_m) >= 2 else 0.0
+    # dpct(atual, anterior). Os argumentos estavam invertidos: passava o PRIMEIRO
+    # mes como atual e o ULTIMO como anterior, entao a base indo de 82.500 a
+    # 88.501 aparecia como -6,8% "no periodo". O painel dizia, em vermelho, o
+    # oposto do que a serie mostra.
+    var_periodo = dpct(int(filt_m["active_clients"].iloc[-1]),
+                       int(filt_m["active_clients"].iloc[0])) if len(filt_m) >= 2 else 0.0
     var_color = "#10b981" if var_periodo >= 0 else "#ef4444"
-    var_sign  = "+" if var_periodo >= 0 else ""
 
     periodo_str      = f"{data_inicio.strftime('%b/%Y')} → {data_fim.strftime('%b/%Y')}"
     avg_churn_filt   = filt_m["churn_rate"].mean() if len(filt_m) else 0.0
@@ -128,13 +132,13 @@ def main():
       <div style='font-size:10px;color:#4b5468;letter-spacing:.1em;text-transform:uppercase;
            font-family:monospace;margin-bottom:6px'>{periodo_str}</div>
       <div style='font-size:22px;font-weight:700;font-family:monospace;color:#4f8ef7'>
-        {int(cur["active_clients"]):,}
+        {num(cur["active_clients"])}
       </div>
       <div style='font-size:11px;color:#4b5468;margin-top:2px'>clientes (filtrado)</div>
-      <div style='margin-top:8px;font-size:11px;color:#8b92a5'>MRR: R$ {cur["mrr"]/1e6:.2f}M</div>
-      <div style='font-size:11px;color:#8b92a5'>Churn médio: {avg_churn_filt:.2f}%</div>
+      <div style='margin-top:8px;font-size:11px;color:#8b92a5'>MRR: {brl_mi(cur["mrr"])}</div>
+      <div style='font-size:11px;color:#8b92a5'>Churn médio: {pct(avg_churn_filt, 2)}</div>
       <div style='margin-top:6px;font-size:11px;color:{var_color};font-weight:600'>
-        {var_sign}{var_periodo:.1f}% no período
+        {pct(var_periodo, sinal=True)} no período
       </div>
     </div>""", unsafe_allow_html=True)
     st.sidebar.markdown("<br>", unsafe_allow_html=True)
@@ -176,11 +180,11 @@ def main():
     # ══ TAB 1 — OVERVIEW ══════════════════════════════════════════════════════
     with tab1:
         c1, c2, c3, c4 = st.columns(4)
-        with c1: kpi_card("Clientes Ativos", f"{int(cur['active_clients']):,}".replace(",", "."),
+        with c1: kpi_card("Clientes Ativos", num(cur['active_clients']),
                            d_clients, "vs. mês ant.", COLORS["blue"])
-        with c2: kpi_card("Churn Rate", f"{cur['churn_rate']:.2f}%",
+        with c2: kpi_card("Churn Rate", pct(cur['churn_rate'], 2),
                            d_churn, "vs. mês ant.", COLORS["red"], invert=True)
-        with c3: kpi_card("ARPU", f"R$ {cur['arpu']:.2f}",
+        with c3: kpi_card("ARPU", brl(cur['arpu']),
                            d_arpu, "vs. mês ant.", COLORS["green"])
         with c4: kpi_card("NPS Score", str(int(cur["nps"])),
                            d_nps, "vs. mês ant.", COLORS["purple"])
@@ -248,15 +252,15 @@ def main():
         with n1:
             acc  = COLORS["green"] if avg_sla_r >= 95 else COLORS["amber"] if avg_sla_r >= 92 else COLORS["red"]
             note = "✓ Acima da meta 95%" if avg_sla_r >= 95 else "⚠ Abaixo da meta 95%"
-            mini_kpi("SLA Médio (filtrado)", f"{avg_sla_r:.1f}%", note, acc)
+            mini_kpi("SLA Médio (filtrado)", pct(avg_sla_r), note, acc)
         with n2:
-            mini_kpi("MTTR Médio", f"{avg_mttr:.0f}h", "Meta ≤ 48h",
+            mini_kpi("MTTR Médio", num(avg_mttr) + "h", "Meta ≤ 48h",
                      COLORS["green"] if avg_mttr <= 36 else COLORS["amber"])
         with n3:
-            mini_kpi("Tickets (30d)", f"{total_t:,}", "Total abertos no período", COLORS["blue"])
+            mini_kpi("Tickets (30d)", num(total_t), "Total abertos no período", COLORS["blue"])
         with n4:
             acc = COLORS["red"] if min_sla < 92 else COLORS["amber"] if min_sla < 95 else COLORS["green"]
-            mini_kpi("Pior SLA Regional", f"{min_sla:.1f}%", "Região mais crítica", acc)
+            mini_kpi("Pior SLA Regional", pct(min_sla), "Região mais crítica", acc)
 
         st.markdown("<br>", unsafe_allow_html=True)
         cn1, cn2 = st.columns([2, 3])
@@ -320,20 +324,20 @@ def main():
                     f"Regiões  : {regioes_label}\n"
                     f"Planos   : {planos_label}\n\n"
                     f"BASE DE CLIENTES\n"
-                    f"  Clientes ativos : {int(cur['active_clients']):,}\n"
-                    f"  Variação período: {var_sign}{var_periodo:.1f}%\n"
-                    f"  Novos (últ. mês): {int(cur['new_clients']):,}\n\n"
+                    f"  Clientes ativos : {num(cur['active_clients'])}\n"
+                    f"  Variação período: {pct(var_periodo, sinal=True)}\n"
+                    f"  Novos (últ. mês): {num(cur['new_clients'])}\n\n"
                     f"CHURN & RETENÇÃO\n"
-                    f"  Churn rate : {cur['churn_rate']:.2f}% (tendência de {churn_trend_str})\n"
-                    f"  Cancelados : {int(cur['churned']):,} clientes no mês\n\n"
+                    f"  Churn rate : {pct(cur['churn_rate'], 2)} (tendência de {churn_trend_str})\n"
+                    f"  Cancelados : {num(cur['churned'])} clientes no mês\n\n"
                     f"RECEITA\n"
-                    f"  MRR        : R$ {cur['mrr']/1e6:.2f}M\n"
-                    f"  ARPU       : R$ {cur['arpu']:.2f} ({arpu_trend_str} {abs(d_arpu):.1f}%)\n"
-                    f"  MRR acum.  : R$ {filt_m['mrr'].sum()/1e6:.1f}M\n\n"
+                    f"  MRR        : {brl_mi(cur['mrr'])}\n"
+                    f"  ARPU       : {brl(cur['arpu'])} ({arpu_trend_str} {pct(abs(d_arpu))})\n"
+                    f"  MRR acum.  : {brl_mi(filt_m['mrr'].sum(), 1)}\n\n"
                     f"QUALIDADE & SLA\n"
                     f"  NPS médio  : {int(filt_m['nps'].mean())} pontos\n"
-                    f"  SLA médio  : {sla_avg:.1f}%\n"
-                    f"  Tickets    : {filt_m['tickets'].sum():,}\n\n"
+                    f"  SLA médio  : {pct(sla_avg)}\n"
+                    f"  Tickets    : {num(filt_m['tickets'].sum())}\n\n"
                     f"Gerado automaticamente · Dados sintéticos · portfólio\n"
                 )
                 st.markdown(f'<div class="resumo-box">{resumo}</div>', unsafe_allow_html=True)

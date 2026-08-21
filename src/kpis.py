@@ -3,6 +3,8 @@ import streamlit as st
 from .constants import COLORS, RADIUS
 
 
+from .format import pct
+
 def dpct(a: float, b: float) -> float:
     return float((a - b) / b * 100) if b and b != 0 else 0.0
 
@@ -34,7 +36,7 @@ def kpi_card(title: str, value: str, delta_pct: float, delta_label: str,
       <div style="color:#f1f5f9;font-size:1.85rem;font-weight:700;line-height:1;
                   font-family:'JetBrains Mono',monospace;">{value}</div>
       <div style="color:{d_color};font-size:.78rem;margin-top:.45rem;font-weight:500;">
-        {arrow} {sign}{abs(delta_pct):.1f}% {delta_label}
+        {arrow} {sign}{pct(abs(delta_pct))} {delta_label}
       </div>
     </div>""", unsafe_allow_html=True)
 

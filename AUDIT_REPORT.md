@@ -8,7 +8,7 @@
 
 ## Resumo do Projeto
 
-Dashboard operacional em tempo real com KPIs críticos de ISP — base de clientes, churn, ARPU, NPS, cohort de retenção, NOC/SLA e MTTR — construído sobre o universo sintético FiberNet (~82.500 clientes, 5 regiões nacionais). Interface Streamlit com filtros persistentes por período, região e plano.
+Dashboard operacional em tempo real com KPIs críticos de ISP — base de clientes, churn, ARPU, NPS, cohort de retenção, NOC/SLA e MTTR — construído sobre o universo sintético FiberNet (82.500 clientes em jan/24, 88.501 em jan/25, 5 regiões nacionais). Interface Streamlit com filtros persistentes por período, região e plano.
 
 Projeto 2 de 3 da série FiberNet Analytics: SQL Pack → **KPI Dashboard** → Churn Predictor.
 

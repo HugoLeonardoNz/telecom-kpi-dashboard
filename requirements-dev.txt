@@ -1,0 +1,3 @@
+# Ambiente completo: app + testes de consistencia.
+-r requirements.txt
+pytest>=8.0.0

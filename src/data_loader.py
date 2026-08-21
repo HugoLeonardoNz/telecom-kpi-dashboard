@@ -53,17 +53,40 @@ def build_monthly() -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values("month").reset_index(drop=True)
 
 
+def base_atual() -> int:
+    """Clientes ativos no ultimo mes da serie — a base que o KPI de abertura mostra.
+
+    Existe porque as quebras por plano e por regiao usavam a constante 85_250,
+    escrita a mao e sem relacao com a serie: build_monthly() parte de 82.500 em
+    jan/24 e chega a 88.501 em jan/25. O painel exibia 88.501 no cartao e uma
+    tabela de planos somando 85.249 logo abaixo — dois numeros para a mesma
+    quantidade, na mesma tela. Registro paralelo mantido a mao sempre desanda:
+    ou se deriva, ou se testa.
+    """
+    return int(build_monthly()["active_clients"].iloc[-1])
+
+
+def _reparte(total: int, pesos) -> list[int]:
+    """Divide `total` pelos pesos garantindo que a soma feche exatamente.
+
+    int() trunca; sem devolver a sobra, a quebra fica alguns clientes abaixo do
+    total e a inconsistencia volta pela porta dos fundos.
+    """
+    n = [int(total * w) for w in pesos]
+    n[0] += total - sum(n)
+    return n
+
+
 @st.cache_data
 def build_plans() -> pd.DataFrame:
     rng = np.random.default_rng(43)
-    total = 85_250
+    total = base_atual()
     plan_churn_base = {
         "Fibra 100MB": 4.1, "Fibra 200MB": 3.3,
         "Fibra 500MB": 2.4, "Fibra 1GB":   1.8,
     }
     rows = []
-    for plan, w in zip(PLANS, PLAN_W):
-        n = int(total * w)
+    for plan, n in zip(PLANS, _reparte(total, PLAN_W)):
         rows.append({
             "plan":       plan,
             "clients":    n,
@@ -78,8 +101,7 @@ def build_plans() -> pd.DataFrame:
 def build_regions(arpu_ref: float) -> pd.DataFrame:
     rng = np.random.default_rng(44)
     rows = []
-    for region, w in zip(REGIONS, REGION_W):
-        n      = int(85_250 * w)
+    for region, n in zip(REGIONS, _reparte(base_atual(), REGION_W)):
         arpu_f = arpu_ref * rng.uniform(0.90, 1.10)
         rows.append({
             "region":     region,
