@@ -7,6 +7,7 @@
 ![Plotly](https://img.shields.io/badge/Plotly-Interactive-3F4F75?style=for-the-badge&logo=plotly&logoColor=white)
 ![Domain](https://img.shields.io/badge/Domain-Telecom%20%2F%20ISP-0ea5e9?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Rodar-local%20em%202%20comandos-10b981?style=for-the-badge)
+![testes](https://github.com/HugoLeonardoNz/telecom-kpi-dashboard/actions/workflows/tests.yml/badge.svg)
 
 **Projeto 2 de 3 da série FiberNet Analytics.**  
 Dashboard operacional em tempo real com KPIs críticos de ISP — do churn ao SLA — construído para decisão de negócio, não para relatório.

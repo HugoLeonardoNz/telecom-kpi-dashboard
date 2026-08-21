@@ -1,0 +1,30 @@
+name: testes
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Instalar dependencias
+        run: pip install -r requirements-dev.txt
+
+      # Os quatro primeiros testes existem por um defeito concreto: a quebra por
+      # plano somava 85.249 debaixo de um KPI que dizia 88.501, e nada quebrava
+      # porque nada comparava os dois.
+      - name: pytest
+        run: pytest tests/ -v
+
+      - name: O app importa sem erro
+        run: python -c "import ast, io; ast.parse(io.open('app.py', encoding='utf-8').read())"
