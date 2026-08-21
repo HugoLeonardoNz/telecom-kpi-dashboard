@@ -1,0 +1,12 @@
+# Tema do Streamlit alinhado ao assets/style.css. Sem isto, o acento padrao
+# (vermelho) pinta slider, checkbox e aba ativa por cima da paleta azul do
+# painel — e vermelho aqui e cor de alerta, nao de controle.
+[theme]
+base                     = "dark"
+primaryColor             = "#4f8ef7"
+backgroundColor          = "#0a0d14"
+secondaryBackgroundColor = "#0f1320"
+textColor                = "#e2e8f0"
+
+[server]
+headless = true
