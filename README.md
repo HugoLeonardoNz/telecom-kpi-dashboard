@@ -53,27 +53,42 @@ Construído sobre o universo sintético **FiberNet** — mesmos planos, mesmas r
 ## Funcionalidades
 
 ### 📈 Overview
+
+![Aba Overview](docs/img/aba-overview.png)
+
 - Clientes ativos, Churn Rate, ARPU e NPS com delta mês a mês
 - Evolução mensal de base, churn e novos clientes (gráfico multi-eixo)
 - NPS Score e ARPU com tendência mensal
 
 ### 🔁 Retenção & Churn
+
+![Aba Retenção & Churn](docs/img/aba-retencao.png)
+
 - **Cohort de Retenção** — heatmap trimestral com decréscimo monotônico garantido (Mês 0 = 100%)
 - **Churn Rate por Plano** — correlação inversa entre preço e evasão
 - **Funil de Recuperação** — do cliente em risco ao cliente retido
 
 ### 💰 Receita
+
+![Aba Receita](docs/img/aba-receita.png)
+
 - MRR mensal vs Receita perdida por churn (gráfico combinado)
 - Revenue mix por plano (donut chart)
 - ARPU e MRR por região
 
 ### 🛠️ NOC / SLA
+
+![Aba NOC / SLA](docs/img/aba-noc-sla.png)
+
 - SLA médio, MTTR médio, volume de tickets e pior SLA regional
 - Distribuição de tickets por categoria (Lentidão, Sem Conexão, Faturamento...)
 - SLA Compliance por região com meta de 95% marcada
 - Tendência mensal de SLA e volume de chamados
 
 ### 📤 Exportar
+
+![Aba Exportar](docs/img/aba-exportar.png)
+
 - CSV com KPIs mensais, dados por plano e dados por região
 - Resumo executivo gerado automaticamente em TXT
 
