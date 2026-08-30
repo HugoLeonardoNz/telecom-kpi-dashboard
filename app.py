@@ -17,6 +17,7 @@ from src.charts import (
 )
 from src.kpis import dpct, kpi_card, mini_kpi, compute_filter_scales
 from src.format import num, pct, brl, brl_mi
+from src.db import MOM_QUERY, REGIONS_QUERY, COHORT_QUERY, monthly_mom_sql, regions_ranked_sql, cohort_retention_sql
 
 st.set_page_config(
     page_title="Telecom Analytics Dashboard",
@@ -173,8 +174,8 @@ def main():
         if p_filtered: parts.append(f"Planos: **{planos_label}**")
         st.info(f"Filtrando por: {' · '.join(parts)}")
 
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "Overview", "Retenção & Churn", "Receita", "NOC / SLA", "Exportar",
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+        "Overview", "Retenção & Churn", "Receita", "NOC / SLA", "Exportar", "SQL",
     ])
 
     # ══ TAB 1 — OVERVIEW ══════════════════════════════════════════════════════
@@ -344,6 +345,31 @@ def main():
                 st.download_button("⬇ Exportar Resumo (TXT)",
                                    data=resumo.encode("utf-8"),
                                    file_name="fibernet_resumo_executivo.txt", mime="text/plain")
+
+    # ══ TAB 6 — SQL ═══════════════════════════════════════════════════════════
+    with tab6:
+        st.markdown('<p class="section-label">Camada SQL — mesmos dados, consultados de verdade</p>',
+                     unsafe_allow_html=True)
+        st.caption(
+            "Os DataFrames acima em memória alimentam um SQLite (ver src/db.py); estas três "
+            "consultas usam window functions reais (LAG, RANK, SUM OVER) em vez de "
+            "equivalentes em pandas. tools/build_db.py grava a mesma base num arquivo "
+            "fibernet_kpi.db, aberto por qualquer client SQL fora do app."
+        )
+
+        st.markdown('<p class="section-label">Variação mês a mês (LAG)</p>', unsafe_allow_html=True)
+        st.code(MOM_QUERY, language="sql")
+        st.dataframe(monthly_mom_sql(), width="stretch", hide_index=True)
+
+        st.markdown("<hr>", unsafe_allow_html=True)
+        st.markdown('<p class="section-label">Ranking regional por MRR (RANK + SUM OVER)</p>', unsafe_allow_html=True)
+        st.code(REGIONS_QUERY, language="sql")
+        st.dataframe(regions_ranked_sql(), width="stretch", hide_index=True)
+
+        st.markdown("<hr>", unsafe_allow_html=True)
+        st.markdown('<p class="section-label">Queda de retenção por coorte (LAG particionado)</p>', unsafe_allow_html=True)
+        st.code(COHORT_QUERY, language="sql")
+        st.dataframe(cohort_retention_sql(), width="stretch", hide_index=True)
 
 
 main()

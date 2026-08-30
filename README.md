@@ -5,6 +5,7 @@
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.x-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
 ![Plotly](https://img.shields.io/badge/Plotly-Interactive-3F4F75?style=for-the-badge&logo=plotly&logoColor=white)
+![SQL](https://img.shields.io/badge/SQL-Window%20Functions-4479A1?style=for-the-badge&logo=sqlite&logoColor=white)
 ![Domain](https://img.shields.io/badge/Domain-Telecom%20%2F%20ISP-0ea5e9?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Rodar-local%20em%202%20comandos-10b981?style=for-the-badge)
 ![testes](https://github.com/HugoLeonardoNz/telecom-kpi-dashboard/actions/workflows/tests.yml/badge.svg)
@@ -92,6 +93,22 @@ Construído sobre o universo sintético **FiberNet** — mesmos planos, mesmas r
 - CSV com KPIs mensais, dados por plano e dados por região
 - Resumo executivo gerado automaticamente em TXT
 
+### 🗄️ SQL
+
+Os mesmos dados das abas acima, consultados de verdade — não é dataset paralelo.
+Os DataFrames alimentam um SQLite (`src/db.py`) e três consultas usam window
+functions reais em vez do equivalente pandas:
+
+- **Variação mês a mês** — `LAG() OVER (ORDER BY month)`, equivalente SQL do
+  `.shift(1)` usado no resto do app.
+- **Ranking regional por MRR** — `RANK()` + `SUM() OVER ()` para participação e
+  participação acumulada.
+- **Queda de retenção por coorte** — `LAG()` particionado por coorte
+  (`PARTITION BY cohort ORDER BY month`).
+
+A aba mostra a query e o resultado lado a lado. `tools/build_db.py` grava a
+mesma base em `data/fibernet_kpi.db`, para abrir num client SQL fora do app.
+
 ---
 
 ## Filtros Persistentes
@@ -123,7 +140,7 @@ A progressão é intencional: identificar o problema (SQL) → monitorar em esca
 
 ```
 telecom-kpi-dashboard/
-├── app.py              — Entry point: CSS global, sidebar, layout das 5 abas
+├── app.py              — Entry point: CSS global, sidebar, layout das 6 abas
 ├── requirements.txt    — Dependências pinadas
 ├── .gitignore
 ├── src/
@@ -131,9 +148,13 @@ telecom-kpi-dashboard/
 │   ├── constants.py    — Constantes globais (COLORS, REGIONS, PLANS, datas)
 │   ├── data_loader.py  — Funções @st.cache_data: build_monthly/plans/regions/cohort/support
 │   ├── charts.py       — Funções que retornam go.Figure prontas para st.plotly_chart
-│   └── kpis.py         — Helpers de UI: kpi_card(), mini_kpi(), dpct(), compute_filter_scales()
+│   ├── kpis.py         — Helpers de UI: kpi_card(), mini_kpi(), dpct(), compute_filter_scales()
+│   └── db.py           — SQLite em memória + consultas com window functions (aba SQL)
+├── tools/
+│   └── build_db.py     — Grava os mesmos dados em data/fibernet_kpi.db (arquivo real)
 └── data/
-    └── README.md       — Documentação dos dados sintéticos e sementes numpy
+    ├── README.md       — Documentação dos dados sintéticos e sementes numpy
+    └── fibernet_kpi.db — Base SQLite gerada por tools/build_db.py
 ```
 
 **Fluxo:**  
@@ -159,11 +180,14 @@ pip install -r requirements-dev.txt
 pytest tests/ -v
 ```
 
-11 testes de consistencia. Os quatro primeiros existem por um defeito concreto: a
+14 testes. Os quatro primeiros existem por um defeito concreto: a
 quebra por plano e por regiao repartia uma constante escrita a mao (`85_250`)
 enquanto a serie mensal terminava em 88.501 clientes. O painel mostrava 88.501 no
 cartao de abertura e uma tabela somando 85.249 logo abaixo, e nada quebrava.
 Agora as quebras derivam de `base_atual()` e o teste falha se a constante voltar.
+Os tres ultimos (`tests/test_sql.py`) cruzam as consultas SQL de `src/db.py`
+contra o mesmo numero calculado em pandas — MoM, ranking regional e queda de
+retencao por coorte tem que bater nos dois lados, ou um dos dois esta errado.
 
 
 
@@ -171,7 +195,7 @@ Agora as quebras derivam de `base_atual()` e o teste falha se a constante voltar
 
 ## Stack
 
-`Python` · `Streamlit` · `Plotly` · `Pandas` · `NumPy`
+`Python` · `Streamlit` · `Plotly` · `Pandas` · `NumPy` · `SQL` (SQLite, window functions)
 
 ---
 
