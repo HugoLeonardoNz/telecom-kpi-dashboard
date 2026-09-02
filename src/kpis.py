@@ -1,6 +1,6 @@
 import streamlit as st
 
-from .constants import COLORS, RADIUS
+from .constants import RADIUS
 
 
 from .format import pct
