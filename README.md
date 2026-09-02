@@ -10,7 +10,7 @@
 ![Status](https://img.shields.io/badge/Rodar-local%20em%202%20comandos-10b981?style=for-the-badge)
 ![testes](https://github.com/HugoLeonardoNz/telecom-kpi-dashboard/actions/workflows/tests.yml/badge.svg)
 
-**Projeto 2 de 3 da série FiberNet Analytics.**  
+**Projeto 2 de 4 da série FiberNet Analytics.**  
 Dashboard operacional em tempo real com KPIs críticos de ISP — do churn ao SLA — construído para decisão de negócio, não para relatório.
 
 [Como rodar](#como-rodar) · [Ver Série](#-série-fibernet-analytics)
@@ -124,13 +124,14 @@ Os filtros persistem entre abas dentro da mesma sessão.
 
 ## Série FiberNet Analytics
 
-Este é o **Projeto 2 de 3** de uma série coesa sobre inteligência de dados em ISP:
+Este é o **Projeto 2 de 4** de uma série coesa sobre inteligência de dados em ISP:
 
 | # | Projeto | Foco | Link |
 |---|---------|------|------|
 | 1 | [SQL Analytics Pack](https://github.com/HugoLeonardoNz/SQL-Analytics-Pack) | SQL analítico · 10 queries · insights brutos | GitHub |
 | 2 | **Telecom KPI Dashboard** | BI operacional · visualização em tempo real | **Este repo** |
 | 3 | [Customer Churn Predictor](https://github.com/HugoLeonardoNz/churn-predictor) | ML · RandomForest · predição e priorização de risco | GitHub |
+| 4 | [CRM Lifecycle Analytics](https://github.com/HugoLeonardoNz/crm-lifecycle-analytics) | Coorte, LTV e teste A/B · medir a ação | GitHub |
 
 A progressão é intencional: identificar o problema (SQL) → monitorar em escala (Dashboard) → prever e agir preventivamente (ML).
 
