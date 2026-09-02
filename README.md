@@ -17,7 +17,7 @@ Dashboard operacional em tempo real com KPIs críticos de ISP — do churn ao SL
 
 </div>
 
-> Peça do portfólio de **Hugo Leonardo**, Analista de Dados — os oito projetos, com o contexto de cada um, estão em **[hugoleonardonz.github.io/portfolio](https://hugoleonardonz.github.io/portfolio/)**.
+> Peça do portfólio de **Hugo Leonardo**, Analista de Dados — cada projeto, com o contexto de por que foi feito, está em **[hugoleonardonz.github.io/portfolio](https://hugoleonardonz.github.io/portfolio/)**.
 
 ---
 
