@@ -143,7 +143,7 @@ def main():
       </div>
     </div>""", unsafe_allow_html=True)
     st.sidebar.markdown("<br>", unsafe_allow_html=True)
-    st.sidebar.caption("Dados 100% sintéticos · FiberNet ISP\nPortfólio · Hugo Leonardo")
+    st.sidebar.caption("Dados 100% sintéticos · FiberNet ISP\nPortfólio · Hugo Nazário")
 
     st.markdown(f"""
     <div style='margin-bottom:24px'>
@@ -160,7 +160,7 @@ def main():
       </div>
       <div style='margin-top:6px;font-size:13px;color:#8b92a5'>
         FiberNet ISP · <span style='color:#4f8ef7;font-family:monospace'>{periodo_str}</span>
-        · Hugo Leonardo
+        · Hugo Nazário
       </div>
       <div style='margin-top:16px;height:2px;
            background:linear-gradient(90deg,#4f8ef7,#7c3aed,rgba(0,0,0,0))'></div>
